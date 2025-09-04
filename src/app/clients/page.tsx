@@ -4,6 +4,7 @@ import { Box, Button, Card, CardContent, FormControl, InputAdornment, InputLabel
 // Using Box layout instead of Grid to avoid type issues
 import { Search as SearchIcon, Add as AddIcon, Visibility as ViewIcon, Edit as EditIcon, Assessment as AssessmentIcon, Event as EventIcon, Task as TaskIcon, Message as MessageIcon, Business as BusinessIcon, TrendingUp as TrendingUpIcon, Schedule as ScheduleIcon, CheckCircle as CheckCircleIcon, Warning as WarningIcon, Info as InfoIcon } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '@/lib/apiFetch';
 
 const getStatusColor = (status: string) => (status === 'active' ? 'success' : status === 'inactive' ? 'warning' : 'default');
 const getStatusIcon = (status: string) => (status === 'active' ? <CheckCircleIcon fontSize="small" /> : status === 'inactive' ? <WarningIcon fontSize="small" /> : <InfoIcon fontSize="small" />);
@@ -19,7 +20,7 @@ export default function ClientsPage() {
     queryKey: ['clients', page, pageSize, search, statusFilter],
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), pageSize: String(pageSize), ...(search && { q: search }), ...(statusFilter && { status: statusFilter }) });
-      return (await fetch(`/api/clients?${params}`)).json();
+      return (await apiFetch(`/api/clients?${params}`)).json();
     }
   });
 

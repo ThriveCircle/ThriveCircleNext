@@ -4,6 +4,7 @@ import { Box, Card, CardContent, Typography, Avatar, Chip } from '@mui/material'
 import { TrendingUp as TrendingUpIcon, TrendingDown as TrendingDownIcon, People as PeopleIcon, Event as EventIcon, AttachMoney as MoneyIcon, CheckCircle as CheckIcon } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '@/lib/apiFetch';
 
 const revenueData = [
   { name: 'Jan', value: 4000 },
@@ -41,7 +42,7 @@ const KPICard: React.FC<{ title: string; value: string | number; trend?: number;
 );
 
 export default function Dashboard() {
-  const { data } = useQuery({ queryKey: ['dashboard-summary'], queryFn: async () => (await fetch('/api/dashboard/summary')).json() });
+  const { data } = useQuery({ queryKey: ['dashboard-summary'], queryFn: async () => (await apiFetch('/api/dashboard/summary')).json() });
 
   return (
     <Box>

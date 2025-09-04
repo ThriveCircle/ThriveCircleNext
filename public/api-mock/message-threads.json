@@ -1,0 +1,8 @@
+{
+  "data": [
+    { "id": "t1", "subject": "Welcome!", "retentionPolicy": "30d", "unreadCount": 2, "updatedAt": "2025-09-03T10:00:00Z", "lastMessage": { "content": "Hello there" } },
+    { "id": "t2", "subject": "Follow up", "retentionPolicy": "90d", "unreadCount": 0, "updatedAt": "2025-09-02T15:30:00Z", "lastMessage": { "content": "Let's schedule" } }
+  ]
+}
+
+

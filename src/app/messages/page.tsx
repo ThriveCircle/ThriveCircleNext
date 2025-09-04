@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import { Box, Card, CardContent, Typography, TextField, InputAdornment, List, ListItem, ListItemAvatar, Avatar, Badge, ListItemText, IconButton, Chip } from '@mui/material';
 import { Search as SearchIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '@/lib/apiFetch';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
 
 export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const { data, isLoading } = useQuery({ queryKey: ['message-threads'], queryFn: async () => (await fetch('/api/message-threads')).json() });
+  const { data, isLoading } = useQuery({ queryKey: ['message-threads'], queryFn: async () => (await apiFetch('/api/message-threads')).json() });
   const threads = (data?.data || []).filter((t: any) => !searchQuery || t.subject.toLowerCase().includes(searchQuery.toLowerCase()) || t.lastMessage?.content?.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (

@@ -1,0 +1,8 @@
+{
+  "data": [
+    { "id": "g1", "title": "Improve Onboarding", "description": "Reduce time-to-value", "status": "active", "progress": 45 },
+    { "id": "g2", "title": "Increase Retention", "description": "Boost N-day retention", "status": "active", "progress": 70 }
+  ]
+}
+
+

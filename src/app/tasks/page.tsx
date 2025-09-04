@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Box, Button, Card, CardContent, Chip, IconButton, LinearProgress, Typography } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiFetch, isGhPages } from '@/lib/apiFetch';
 import dayjs from 'dayjs';
 import { useRightDrawer } from '../providers/RightDrawerProvider';
 
@@ -12,11 +13,11 @@ export default function TasksPage() {
   const queryClient = useQueryClient();
   const { openDrawer, closeDrawer } = useRightDrawer();
 
-  const { data: goalsData } = useQuery({ queryKey: ['goals'], queryFn: async () => (await fetch('/api/goals')).json() });
+  const { data: goalsData } = useQuery({ queryKey: ['goals'], queryFn: async () => (await apiFetch('/api/goals')).json() });
   const goals = goalsData?.data || [];
 
   const updateGoalMutation = useMutation({
-    mutationFn: async (goal: any) => (await fetch(`/api/goals/${goal.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(goal) })).json(),
+    mutationFn: async (goal: any) => (await apiFetch(`/api/goals/${goal.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(goal) })).json(),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['goals'] }); closeDrawer(); setEditingGoal(null); },
   });
 
@@ -24,7 +25,7 @@ export default function TasksPage() {
     <Box>
       <Typography variant="h6" sx={{ mb: 2 }}>{title}</Typography>
       {/* Keep brief form parity for demo */}
-      <Button variant="contained" onClick={() => editingGoal && updateGoalMutation.mutate(editingGoal)}>Save</Button>
+      <Button variant="contained" disabled={isGhPages} onClick={() => editingGoal && updateGoalMutation.mutate(editingGoal)}>Save</Button>
     </Box>
   );
 

@@ -1,0 +1,8 @@
+{
+  "data": [
+    { "id": "m1", "threadId": "t1", "senderId": "user-1", "content": "Hi!", "createdAt": "2025-09-03T09:00:00Z" },
+    { "id": "m2", "threadId": "t1", "senderId": "user-2", "content": "Welcome to ThriveCircle.", "createdAt": "2025-09-03T09:05:00Z" }
+  ]
+}
+
+

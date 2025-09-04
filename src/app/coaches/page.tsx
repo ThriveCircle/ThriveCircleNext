@@ -2,9 +2,10 @@
 import React from 'react';
 import { Box, Card, CardContent, Typography, Avatar, Chip } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
+import { apiFetch } from '@/lib/apiFetch';
 
 export default function CoachesPage() {
-  const { data } = useQuery({ queryKey: ['coaches'], queryFn: async () => (await fetch('/api/coaches')).json() });
+  const { data } = useQuery({ queryKey: ['coaches'], queryFn: async () => (await apiFetch('/api/coaches')).json() });
   const coaches = data?.data || [];
   return (
     <Box>

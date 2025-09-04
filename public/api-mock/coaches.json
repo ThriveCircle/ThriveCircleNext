@@ -1,0 +1,8 @@
+{
+  "data": [
+    { "id": "c1", "isVerified": true, "user": { "name": "Alice Coach", "email": "alice@example.com", "avatar": "" } },
+    { "id": "c2", "isVerified": false, "user": { "name": "Bob Mentor", "email": "bob@example.com", "avatar": "" } }
+  ]
+}
+
+

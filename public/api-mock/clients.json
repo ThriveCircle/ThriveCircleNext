@@ -1,0 +1,8 @@
+{
+  "data": [
+    { "id": "u1", "name": "Jane Doe", "email": "jane@example.com", "company": "Acme Inc", "status": "active", "coachId": "c1", "programId": "p1", "assessmentCount": 3, "sessionCount": 5, "nextSession": "2025-09-10" },
+    { "id": "u2", "name": "John Smith", "email": "john@example.com", "company": "Globex", "status": "inactive", "coachId": null, "programId": null, "assessmentCount": 1, "sessionCount": 2 }
+  ]
+}
+
+
