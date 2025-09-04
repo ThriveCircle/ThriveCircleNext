@@ -39,6 +39,14 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: '/ThriveCircleNext'
         run: npm run build
 
+      - name: Debug build outputs
+        run: |
+          ls -la
+          echo "--- .next contents ---"
+          ls -la .next || true
+          echo "--- out contents ---"
+          ls -la out || true
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
