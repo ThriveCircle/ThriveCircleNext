@@ -1,0 +1,447 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum UserRole {
+  admin
+  coach
+  client
+}
+
+enum ClientStatus {
+  active
+  inactive
+  archived
+}
+
+enum SessionStatus {
+  scheduled
+  completed
+  cancelled
+  rescheduled
+}
+
+enum SessionType {
+  initial
+  follow_up
+  assessment
+  milestone
+}
+
+enum GoalStatus {
+  active
+  completed
+  paused
+  cancelled
+}
+
+enum MilestoneStatus {
+  pending
+  in_progress
+  completed
+}
+
+enum MetricFrequency {
+  daily
+  weekly
+  monthly
+}
+
+enum TaskStatus {
+  pending
+  in_progress
+  completed
+  cancelled
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+}
+
+enum AttachmentType {
+  image
+  pdf
+  document
+  video
+}
+
+enum VirusScanStatus {
+  pending
+  clean
+  infected
+  error
+}
+
+enum RetentionPolicy {
+  days7
+  days30
+  days90
+  year1
+  permanent
+}
+
+enum ModerationStatus {
+  pending
+  reviewed
+  resolved
+  dismissed
+}
+
+enum InvitationStatus {
+  pending
+  accepted
+  expired
+  cancelled
+}
+
+// ---------- Models ----------
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole
+  avatar    String?
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  coach      Coach?
+  client     Client?
+  messages   Message[]       @relation("UserMessages")
+  threads    ThreadParticipant[]
+  reads      MessageRead[]
+  auditLogs  AuditLog[]
+  reports    ModerationReport[] @relation("ReporterReports")
+  typing     TypingIndicator[]
+}
+
+model Client {
+  id             String        @id @default(cuid())
+  userId         String?       @unique
+  name           String
+  email          String
+  phone          String?
+  company        String?
+  avatar         String?
+  status         ClientStatus  @default(active)
+  coachId        String?
+  programId      String?
+  assessmentCount Int?         @default(0)
+  sessionCount   Int?          @default(0)
+  lastSession    DateTime?
+  nextSession    DateTime?
+  totalSpent     Int?          @default(0) // store in cents
+  notes          Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // Relations
+  user     User?    @relation(fields: [userId], references: [id])
+  coach    Coach?   @relation(fields: [coachId], references: [id])
+  sessions Session[]
+  tasks    Task[]
+  goals    Goal[]
+  invoices Invoice[]
+}
+
+model Coach {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  bio           String?  @default("")
+  specialties   Json?    // string[]
+  avatar        String?
+  availability  Json?    // { days: string[]; hours: string }
+  rating        Float?
+  reviewCount   Int?     @default(0)
+  hourlyRate    Int?     // cents
+  totalEarnings Int?     @default(0) // cents
+  status        String?  @default("active")
+  isVerified    Boolean  @default(false)
+  certifications Json?
+  experience    Int?     @default(0)
+  languages     Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user     User    @relation(fields: [userId], references: [id])
+  clients  Client[]
+  sessions Session[]
+  goals    Goal[]
+  tasks    Task[]
+  invoices Invoice[]
+  invitations Invitation[]
+}
+
+model Program {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  duration    Int      // weeks
+  createdAt   DateTime @default(now())
+}
+
+model Session {
+  id        String        @id @default(cuid())
+  clientId  String
+  coachId   String
+  programId String?
+  date      DateTime
+  duration  Int
+  status    SessionStatus
+  notes     String?
+  type      SessionType
+  createdAt DateTime      @default(now())
+
+  client Client @relation(fields: [clientId], references: [id])
+  coach  Coach  @relation(fields: [coachId], references: [id])
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  clientId    String?
+  coachId     String?
+  programId   String?
+  goalId      String?
+  status      TaskStatus   @default(pending)
+  priority    TaskPriority @default(medium)
+  dueDate     DateTime?
+  completedAt DateTime?
+  recurrence  String?      @default("none")
+  attachments Json?
+  notes       Json?
+  timeSpent   Int?         @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  client Client? @relation(fields: [clientId], references: [id])
+  coach  Coach?  @relation(fields: [coachId], references: [id])
+  goal   Goal?   @relation(fields: [goalId], references: [id])
+}
+
+model Goal {
+  id             String      @id @default(cuid())
+  title          String
+  description    String
+  category       String
+  clientId       String
+  coachId        String?
+  targetDate     DateTime
+  successCriteria Json?
+  status         GoalStatus  @default(active)
+  progress       Int         @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  client     Client    @relation(fields: [clientId], references: [id])
+  coach      Coach?    @relation(fields: [coachId], references: [id])
+  milestones GoalMilestone[]
+  metrics    GoalMetric[]
+  tasks      Task[]
+}
+
+model GoalMilestone {
+  id          String          @id @default(cuid())
+  goalId      String
+  title       String
+  description String
+  targetDate  DateTime
+  status      MilestoneStatus @default(pending)
+  completedAt DateTime?
+  order       Int
+  createdAt   DateTime        @default(now())
+
+  goal Goal @relation(fields: [goalId], references: [id])
+}
+
+model GoalMetric {
+  id           String          @id @default(cuid())
+  goalId       String
+  name         String
+  unit         String
+  frequency    MetricFrequency
+  target       Float
+  currentValue Float           @default(0)
+  createdAt    DateTime        @default(now())
+
+  goal     Goal            @relation(fields: [goalId], references: [id])
+  history  MetricHistory[]
+}
+
+model MetricHistory {
+  id       String   @id @default(cuid())
+  metricId String
+  value    Float
+  date     DateTime @default(now())
+  notes    String?
+
+  metric GoalMetric @relation(fields: [metricId], references: [id])
+}
+
+model MessageThread {
+  id               String    @id @default(cuid())
+  subject          String
+  isMuted          Boolean   @default(false)
+  isArchived       Boolean   @default(false)
+  retentionPolicy  RetentionPolicy @default(permanent)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  messages     Message[]
+  participants ThreadParticipant[]
+  typing       TypingIndicator[]
+}
+
+model ThreadParticipant {
+  userId   String
+  threadId String
+
+  user   User          @relation(fields: [userId], references: [id])
+  thread MessageThread @relation(fields: [threadId], references: [id])
+
+  @@id([userId, threadId])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  threadId   String
+  senderId   String
+  content    String
+  createdAt  DateTime @default(now())
+  editedAt   DateTime?
+  isDeleted  Boolean  @default(false)
+  moderationStatus String? // simplified for now
+  reportCount Int     @default(0)
+
+  thread MessageThread @relation(fields: [threadId], references: [id])
+  sender User          @relation("UserMessages", fields: [senderId], references: [id])
+  attachments Attachment[]
+  reads       MessageRead[]
+  moderationReports ModerationReport[]
+}
+
+model MessageRead {
+  messageId String
+  userId    String
+  readAt    DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@id([messageId, userId])
+}
+
+model Attachment {
+  id              String           @id @default(cuid())
+  messageId       String?
+  name            String
+  type            AttachmentType
+  url             String
+  size            Int
+  mimeType        String
+  isVirusScanned  Boolean         @default(false)
+  virusScanStatus VirusScanStatus @default(pending)
+  cdnUrl          String?
+  thumbnailUrl    String?
+  createdAt       DateTime        @default(now())
+
+  message Message? @relation(fields: [messageId], references: [id])
+}
+
+model TypingIndicator {
+  id         String   @id @default(cuid())
+  userId     String
+  threadId   String
+  isTyping   Boolean  @default(false)
+  lastActivity DateTime @default(now())
+
+  user   User          @relation(fields: [userId], references: [id])
+  thread MessageThread @relation(fields: [threadId], references: [id])
+}
+
+model ModerationReport {
+  id          String            @id @default(cuid())
+  messageId   String
+  threadId    String
+  reporterId  String
+  reason      String
+  description String
+  status      ModerationStatus  @default(pending)
+  moderatorId String?
+  actionTaken String?
+  createdAt   DateTime          @default(now())
+  resolvedAt  DateTime?
+
+  message  Message @relation(fields: [messageId], references: [id])
+  reporter User    @relation("ReporterReports", fields: [reporterId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  userId    String
+  targetId  String
+  details   Json
+  ipAddress String
+  userAgent String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Invitation {
+  id         String            @id @default(cuid())
+  coachId    String
+  email      String
+  name       String?
+  status     InvitationStatus  @default(pending)
+  token      String            @unique
+  createdAt  DateTime          @default(now())
+  acceptedAt DateTime?
+
+  coach Coach @relation(fields: [coachId], references: [id])
+}
+
+model Invoice {
+  id        String   @id @default(cuid())
+  clientId  String
+  coachId   String
+  amount    Int
+  currency  String   @default("USD")
+  status    String   @default("draft")
+  dueDate   DateTime
+  paidAt    DateTime?
+  createdAt DateTime @default(now())
+
+  client Client @relation(fields: [clientId], references: [id])
+  coach  Coach  @relation(fields: [coachId], references: [id])
+  items  InvoiceItem[]
+}
+
+model InvoiceItem {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  description String
+  quantity    Int
+  unitPrice   Int
+  total       Int
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+}
