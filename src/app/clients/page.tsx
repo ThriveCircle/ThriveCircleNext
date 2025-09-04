@@ -1,11 +1,12 @@
 "use client";
 import React, { useState } from 'react';
-import { Box, Button, Card, CardContent, FormControl, InputAdornment, InputLabel, MenuItem, Pagination, Paper, Select, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Chip, Avatar, Grid, Tooltip, IconButton } from '@mui/material';
+import { Box, Button, Card, CardContent, FormControl, InputAdornment, InputLabel, MenuItem, Pagination, Paper, Select, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Chip, Avatar, Tooltip, IconButton } from '@mui/material';
+// Using Box layout instead of Grid to avoid type issues
 import { Search as SearchIcon, Add as AddIcon, Visibility as ViewIcon, Edit as EditIcon, Assessment as AssessmentIcon, Event as EventIcon, Task as TaskIcon, Message as MessageIcon, Business as BusinessIcon, TrendingUp as TrendingUpIcon, Schedule as ScheduleIcon, CheckCircle as CheckCircleIcon, Warning as WarningIcon, Info as InfoIcon } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 
 const getStatusColor = (status: string) => (status === 'active' ? 'success' : status === 'inactive' ? 'warning' : 'default');
-const getStatusIcon = (status: string) => (status === 'active' ? <CheckCircleIcon fontSize="small" /> : status === 'inactive' ? <Warning as any fontSize="small" /> : <InfoIcon fontSize="small" />);
+const getStatusIcon = (status: string) => (status === 'active' ? <CheckCircleIcon fontSize="small" /> : status === 'inactive' ? <WarningIcon fontSize="small" /> : <InfoIcon fontSize="small" />);
 
 export default function ClientsPage() {
   const [search, setSearch] = useState('');
@@ -31,60 +32,52 @@ export default function ClientsPage() {
         <Button variant="contained" startIcon={<AddIcon />}>Add Client</Button>
       </Box>
 
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{clients.filter((c: any) => c.status === 'active').length}</Typography>
-                  <Typography variant="body2">Active Clients</Typography>
-                </Box>
-                <CheckCircleIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 3, mb: 3 }}>
+        <Card sx={{ background: 'linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%)', color: 'white' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{clients.filter((c: any) => c.status === 'active').length}</Typography>
+                <Typography variant="body2">Active Clients</Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{(data?.data || []).filter((c: any) => !!c.nextSession).length}</Typography>
-                  <Typography variant="body2">Upcoming Sessions</Typography>
-                </Box>
-                <ScheduleIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+              <CheckCircleIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+            </Box>
+          </CardContent>
+        </Card>
+        <Card sx={{ background: 'linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)', color: 'white' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{(data?.data || []).filter((c: any) => !!c.nextSession).length}</Typography>
+                <Typography variant="body2">Upcoming Sessions</Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #2196F3 0%, #42A5F5 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{clients.reduce((sum: number, c: any) => sum + (c.assessmentCount || 0), 0)}</Typography>
-                  <Typography variant="body2">Total Assessments</Typography>
-                </Box>
-                <AssessmentIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+              <ScheduleIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+            </Box>
+          </CardContent>
+        </Card>
+        <Card sx={{ background: 'linear-gradient(135deg, #2196F3 0%, #42A5F5 100%)', color: 'white' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{clients.reduce((sum: number, c: any) => sum + (c.assessmentCount || 0), 0)}</Typography>
+                <Typography variant="body2">Total Assessments</Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ background: 'linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%)', color: 'white' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                  <Typography variant="h4" sx={{ fontWeight: 'bold' }}>${clients.reduce((sum: number, c: any) => sum + (c.totalSpent || 0), 0).toLocaleString()}</Typography>
-                  <Typography variant="body2">Total Revenue</Typography>
-                </Box>
-                <TrendingUpIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+              <AssessmentIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+            </Box>
+          </CardContent>
+        </Card>
+        <Card sx={{ background: 'linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%)', color: 'white' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>${clients.reduce((sum: number, c: any) => sum + (c.totalSpent || 0), 0).toLocaleString()}</Typography>
+                <Typography variant="body2">Total Revenue</Typography>
               </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+              <TrendingUpIcon sx={{ fontSize: 40, opacity: 0.8 }} />
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
 
       <Card sx={{ mb: 3 }}>
         <CardContent>

@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { Box, Card, CardContent, Grid, Typography, Avatar, Chip } from '@mui/material';
+import { Box, Card, CardContent, Typography, Avatar, Chip } from '@mui/material';
 import { TrendingUp as TrendingUpIcon, TrendingDown as TrendingDownIcon, People as PeopleIcon, Event as EventIcon, AttachMoney as MoneyIcon, CheckCircle as CheckIcon } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
@@ -46,45 +46,41 @@ export default function Dashboard() {
   return (
     <Box>
       <Typography variant="h4" sx={{ mb: 3 }}>Dashboard</Typography>
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}><KPICard title="Active Clients" value={data?.activeClients || 0} trend={12} icon={<PeopleIcon />} color="#6750A4" /></Grid>
-        <Grid item xs={12} sm={6} md={3}><KPICard title="Completion Rate" value={`${data?.completionRate || 0}%`} trend={8} icon={<CheckIcon />} color="#B69DF8" /></Grid>
-        <Grid item xs={12} sm={6} md={3}><KPICard title="Upcoming Sessions" value={data?.upcomingSessions || 0} trend={8} icon={<EventIcon />} color="#10B981" /></Grid>
-        <Grid item xs={12} sm={6} md={3}><KPICard title="Revenue MTD" value={`$${(data?.revenueMTD || 0).toLocaleString()}`} trend={15} icon={<MoneyIcon />} color="#F59E0B" /></Grid>
-      </Grid>
+      <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', sm: 'repeat(2,1fr)', md: 'repeat(4,1fr)' }, mb: 4 }}>
+        <KPICard title="Active Clients" value={data?.activeClients || 0} trend={12} icon={<PeopleIcon />} color="#6750A4" />
+        <KPICard title="Completion Rate" value={`${data?.completionRate || 0}%`} trend={8} icon={<CheckIcon />} color="#B69DF8" />
+        <KPICard title="Upcoming Sessions" value={data?.upcomingSessions || 0} trend={8} icon={<EventIcon />} color="#10B981" />
+        <KPICard title="Revenue MTD" value={`$${(data?.revenueMTD || 0).toLocaleString()}`} trend={15} icon={<MoneyIcon />} color="#F59E0B" />
+      </Box>
 
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} lg={8}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Revenue Trend</Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="value" stroke="#6750A4" strokeWidth={3} />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} lg={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 2 }}>Client Status</Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie data={clientStatusData} cx="50%" cy="50%" outerRadius={80} fill="#8884d8" dataKey="value">
-                    {clientStatusData.map((entry, index) => (<Cell key={`cell-${index}`} fill={entry.color} />))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, mb: 4 }}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" sx={{ mb: 2 }}>Revenue Trend</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={revenueData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="value" stroke="#6750A4" strokeWidth={3} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" sx={{ mb: 2 }}>Client Status</Typography>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie data={clientStatusData} cx="50%" cy="50%" outerRadius={80} fill="#8884d8" dataKey="value">
+                  {clientStatusData.map((entry, index) => (<Cell key={`cell-${index}`} fill={entry.color} />))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </Box>
     </Box>
   );
 }

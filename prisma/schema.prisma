@@ -374,6 +374,8 @@ model TypingIndicator {
 
   user   User          @relation(fields: [userId], references: [id])
   thread MessageThread @relation(fields: [threadId], references: [id])
+
+  @@unique([userId, threadId])
 }
 
 model ModerationReport {

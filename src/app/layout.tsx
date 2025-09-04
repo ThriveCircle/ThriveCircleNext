@@ -6,17 +6,8 @@ import { queryClient } from './providers/queryClient';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { theme } from './providers/theme';
 import { RightDrawerProvider } from './providers/RightDrawerProvider';
+import { AppShell } from './AppShell';
 import React from 'react';
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "ThriveCircleNext",
@@ -35,10 +26,11 @@ export default function RootLayout({
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <RightDrawerProvider>
-              {children}
+              <AppShell>
+                {children}
+              </AppShell>
             </RightDrawerProvider>
           </ThemeProvider>
-          {/* @ts-expect-error react-query-devtools type mismatch with React 19 */}
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </body>

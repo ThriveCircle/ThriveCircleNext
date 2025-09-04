@@ -4,7 +4,6 @@ import { AppBar, Avatar, Box, Chip, CssBaseline, Drawer, FormControl, IconButton
 import { Dashboard as DashboardIcon, Assessment as AssessmentIcon, SmartToy as SmartToyIcon, Settings as SettingsIcon, Menu as MenuIcon, ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, Business as BusinessIcon, People as PeopleIcon, Psychology as PsychologyIcon, School as SchoolIcon, Event as EventIcon, Task as TaskIcon, Chat as ChatIcon, Receipt as ReceiptIcon, BarChart as BarChartIcon, AdminPanelSettings as AdminIcon, Person as PersonIcon } from '@mui/icons-material';
 import Link from 'next/link';
 import { UserProvider } from './providers/UserContext';
-import { RightDrawerProvider } from './providers/RightDrawerProvider';
 
 const logoDataUrl = "data:image/svg+xml;base64," + btoa(`
 <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -39,7 +38,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const [currentCoachId, setCurrentCoachId] = useState<string | undefined>(undefined);
   const [currentClientId, setCurrentClientId] = useState<string | undefined>(undefined);
   const [selectedClient, setSelectedClient] = useState<string>("");
-  const [currentUser, setCurrentUser] = useState({
+  type CurrentUser = { name: string; email: string; avatar: string; role: "admin" | "coach" | "client" };
+  const [currentUser, setCurrentUser] = useState<CurrentUser>({
     name: "Admin User",
     email: "admin@thrivecircle.com",
     avatar: "https://i.pravatar.cc/150?img=1",
@@ -153,9 +153,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
       <Box component="main" sx={{ flexGrow: 1, p: 3, width: { md: `calc(100% - ${drawerCollapsed ? collapsedDrawerWidth : drawerWidth}px)` }, mt: '64px' }}>
         <UserProvider value={{ role: userRole, setRole: setUserRole, currentCoachId, setCurrentCoachId, currentClientId, setCurrentClientId }}>
-          <RightDrawerProvider>
-            {children}
-          </RightDrawerProvider>
+          {children}
         </UserProvider>
       </Box>
 

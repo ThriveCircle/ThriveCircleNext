@@ -4,6 +4,8 @@ import { Box, Card, CardContent, Typography, TextField, InputAdornment, List, Li
 import { Search as SearchIcon, MoreVert as MoreVertIcon } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
 export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState('');

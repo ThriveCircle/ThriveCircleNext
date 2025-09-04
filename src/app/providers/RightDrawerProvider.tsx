@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { Drawer, Box, IconButton, Typography, Divider } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';

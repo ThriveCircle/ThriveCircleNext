@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Box, Button, Card, CardContent, Chip, Grid, IconButton, LinearProgress, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Chip, IconButton, LinearProgress, Typography } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -34,31 +34,29 @@ export default function TasksPage() {
         <Typography variant="h4">Goals & Tasks Management</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setEditingGoal({}); openDrawer(renderGoalForm('Create New Goal')); }}>Create New Goal</Button>
       </Box>
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: 'repeat(2,1fr)', lg: 'repeat(3,1fr)' } }}>
         {goals.map((goal: any) => (
-          <Grid item xs={12} md={6} lg={4} key={goal.id}>
-            <Card onClick={() => setSelectedGoal(goal)} sx={{ cursor: 'pointer' }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                  <Chip label={goal.status} size="small" />
-                  <IconButton size="small" onClick={(e) => { e.stopPropagation(); setEditingGoal(goal); openDrawer(renderGoalForm('Edit Goal')); }}>
-                    <EditIcon />
-                  </IconButton>
+          <Card key={goal.id} onClick={() => setSelectedGoal(goal)} sx={{ cursor: 'pointer' }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                <Chip label={goal.status} size="small" />
+                <IconButton size="small" onClick={(e) => { e.stopPropagation(); setEditingGoal(goal); openDrawer(renderGoalForm('Edit Goal')); }}>
+                  <EditIcon />
+                </IconButton>
+              </Box>
+              <Typography variant="h6" sx={{ mb: 1 }}>{goal.title}</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{goal.description}</Typography>
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="caption">Progress</Typography>
+                  <Typography variant="caption">{goal.progress}%</Typography>
                 </Box>
-                <Typography variant="h6" sx={{ mb: 1 }}>{goal.title}</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{goal.description}</Typography>
-                <Box sx={{ mb: 2 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                    <Typography variant="caption">Progress</Typography>
-                    <Typography variant="caption">{goal.progress}%</Typography>
-                  </Box>
-                  <LinearProgress variant="determinate" value={goal.progress} sx={{ height: 8, borderRadius: 4 }} />
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
+                <LinearProgress variant="determinate" value={goal.progress} sx={{ height: 8, borderRadius: 4 }} />
+              </Box>
+            </CardContent>
+          </Card>
         ))}
-      </Grid>
+      </Box>
     </Box>
   );
 }
